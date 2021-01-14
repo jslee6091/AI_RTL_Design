@@ -1,0 +1,199 @@
+django queryset code
+(base) C:\mypython\django_fw>python manage.py shell
+Python 3.8.5 (default, Sep  3 2020, 21:29:08) [MSC v.1916 64 bit (AMD64)]
+Type 'copyright', 'credits' or 'license' for more information
+IPython 7.19.0 -- An enhanced Interactive Python. Type '?' for help.
+
+In [1]: from blog.models import Post
+
+In [2]: Post.objects.all()
+Out[2]: <QuerySet [<Post: 첫번째글>, <Post: 두번째글>]>
+
+In [3]: from django.contrib.auth.models import User
+
+In [4]: User.objects.all()
+Out[4]: <QuerySet [<User: admin>]>
+
+In [5]: User.objects.get(username='admin')
+Out[5]: <User: admin>
+
+In [6]: me = User.objects.get(username='admin')
+
+In [7]: me
+Out[7]: <User: admin>
+
+In [8]: type(me)
+Out[8]: django.contrib.auth.models.User
+
+In [9]: me.id
+Out[9]: 1
+
+In [10]: me.username
+Out[10]: 'admin'
+
+In [11]: me.email
+Out[11]: 'admin@aa.com'
+
+In [12]: me.password
+Out[12]: 'pbkdf2_sha256$216000$bYruaE4pjpaC$ZuOJ6bsxXvAjwQ/gR9VhNGUf1wRyvf7MiAMMC0UlBKU='
+
+In [14]: Post.objects.create(author=me, title='Sample title', text='Sample text')
+Out[14]: <Post: Sample title>
+
+In [15]: Post.objects.all()
+Out[15]: <QuerySet [<Post: 첫번째글>, <Post: 두번째글>, <Post: Sample title>]>
+
+In [16]: Post.objects.filter(author=me)
+Out[16]: <QuerySet [<Post: 첫번째글>, <Post: 두번째글>, <Post: Sample title>]>
+
+In [17]: Post.objects.filter(title__contains='title')
+Out[17]: <QuerySet [<Post: Sample title>]>
+
+In [18]: mypost = Post.objects.filter(title__contains='title')
+
+In [19]: mypost
+Out[19]: <QuerySet [<Post: Sample title>]>
+
+In [20]: type(mypost)
+Out[20]: django.db.models.query.QuerySet
+
+In [21]: for val in mypost:
+    ...:     print(val)
+    ...: 
+Sample title
+
+In [22]: myposts = Post.objects.filter(title__contains='글')
+
+In [23]: myposts
+Out[23]: <QuerySet [<Post: 첫번째글>, <Post: 두번째글>]>
+
+In [24]: type(myposts)
+Out[24]: django.db.models.query.QuerySet
+
+In [25]: for post in myposts:
+    ...:     print(type(post), post.id)
+    ...: 
+<class 'blog.models.Post'> 1
+<class 'blog.models.Post'> 2
+
+In [26]: from django.utils import timezone
+
+In [27]: timezone.now()
+Out[27]: datetime.datetime(2021, 1, 12, 8, 19, 50, 749674, tzinfo=<UTC>)
+
+In [28]: Post.objects.filter(published_date__lte=timezone.now())
+Out[28]: <QuerySet [<Post: 두번째글>]>
+
+In [29]: post3 = Post.objects.get(title="Sample title")
+
+In [30]: type(post3)
+Out[30]: blog.models.Post
+
+In [31]: post3.id
+Out[31]: 3
+
+In [32]: post3.text
+Out[32]: 'Sample text'
+
+In [33]: post3.published_date
+
+In [34]: post3.publish()
+
+In [35]: post3.published_date
+Out[35]: datetime.datetime(2021, 1, 12, 8, 25, 16, 76181, tzinfo=<UTC>)
+
+In [36]: Post.objects.filter(published_date__lte=timezone.now())
+Out[36]: <QuerySet [<Post: 두번째글>, <Post: Sample title>]>
+
+In [37]: Post.objects.order_by('created_date')
+Out[37]: <QuerySet [<Post: 첫번째글>, <Post: 두번째글>, <Post: Sample title>]>
+
+In [38]: Post.objects.order_by('-created_date')
+Out[38]: <QuerySet [<Post: Sample title>, <Post: 두번째글>, <Post: 첫번째글>]>
+
+In [39]: Post.objects.filter(published_date__lte = timezone.now()).order_by('published_date')
+Out[39]: <QuerySet [<Post: 두번째글>, <Post: Sample title>]>
+
+In [40]: Post.objects.filter(published_date__lte = timezone.now()).order_by('-published_date')
+Out[40]: <QuerySet [<Post: Sample title>, <Post: 두번째글>]>
+
+In [41]: from django.shortcuts import get_object_or_404
+
+In [42]: get_object_or_404(Post,pk=1)
+Out[42]: <Post: 첫번째글>
+
+In [43]: post1 = get_object_or_404(Post,pk=1)
+
+In [44]: type(post1)
+Out[44]: blog.models.Post
+
+In [45]: post1.title
+Out[45]: '첫번째글'
+
+In [46]: post1.text
+Out[46]: '첫번째글의 내용입니다.'
+
+In [47]: post1.created_date
+Out[47]: datetime.datetime(2021, 1, 12, 6, 22, 30, tzinfo=<UTC>)
+
+In [48]: delpost = Post.objects.get(title='Sample title')
+
+In [49]: delpost
+Out[49]: <Post: Sample title>
+
+In [50]: delpost.delete()
+Out[50]: (1, {'blog.Post': 1})
+
+In [51]: Post.objects.all()
+Out[51]: <QuerySet [<Post: 첫번째글>, <Post: 두번째글>]>
+
+----------------------------- comment 추가 ---------------------------------------
+(base) C:\mypython\django_fw>python manage.py shell
+Python 3.8.5 (default, Sep  3 2020, 21:29:08) [MSC v.1916 64 bit (AMD64)]
+Type 'copyright', 'credits' or 'license' for more information
+IPython 7.19.0 -- An enhanced Interactive Python. Type '?' for help.
+
+In [2]: from blog.models import Post,Comment
+
+In [3]: posts = Post.objects.all()
+
+In [4]: type(posts)
+Out[4]: django.db.models.query.QuerySet
+
+In [5]: for post in posts:
+   ...:     print(post.id, post.title)
+   ...:
+1 my first text
+2 second text
+5 third text
+6 fourth text
+10 fifth text
+
+In [6]: post2 = Post.objects.get(id=5)
+
+In [7]: post2
+Out[7]: <Post: third text>
+
+In [8]: post2.comments
+Out[8]: <django.db.models.fields.related_descriptors.create_reverse_many_to_one_manager.
+<locals>.RelatedManager at 0x1a992f17d60>
+
+In [9]: post2.comments.all()
+Out[9]: <QuerySet [<Comment: 댓글놀이>, <Comment: 나도댓글놀이>]>
+
+In [10]: comments= post2.comments.all()
+
+In [12]: for comment in comments:
+    ...:     print(comment.id, comment.author, comment.text, comment.post)
+    ...: 
+1 라라랄 댓글놀이 third text
+2 이이잉 나도댓글놀이 third text
+
+In [13]: for comment in comments:
+    ...:     print(comment.id, comment.author, comment.post.id)
+    ...: 
+1 라라랄 5
+2 이이잉 5
+
+In [17]: post2.id
+Out[17]: 5
