@@ -37,6 +37,10 @@ class Post(models.Model):
         self.published_date = timezone.now()
         self.save()
 
+    # 승인된 댓글만 필터링
+    def approved_comments(self):
+        return self.comments.filter(approved_comment=True)
+
 
 # Post 에 달리는 댓글
 class Comment(models.Model):

@@ -33,13 +33,23 @@
 <hr>
 <a href="{% url 'add_comment_to_post' pk=post.pk %}" class="btn btn-default">Add Comment</a>
 {% for comment in post.comments.all %}
-    <div class="comment">
-        <div class="date">
-            {{comment.created_date}}
+    {% if user.is_authenticated %}
+        <div class="comment">
+            <div class="date">
+                {{comment.created_date}}
+                {% if not comment.approved_comment %}
+                    <a href="{% url 'comment_remove' pk=comment.pk %}" class="btn btn-default">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                    <a href="{% url 'comment_approve' pk=comment.pk %}" class="btn btn-default">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </a>
+                {% endif %}
+            </div>
+            <strong>{{comment.author}}</strong>
+            <p>{{comment.text|linebreaks}}</p>
         </div>
-        <strong>{{comment.author}}</strong>
-        <p>{{comment.text|linebreaks}}</p>
-    </div>
+    {% endif %}
 {% empty %}
     <p>No comments here yet : </p>
 {% endfor %}

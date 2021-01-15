@@ -11,4 +11,6 @@
             <a href="{% url 'post_detail' pk=post.pk %}">Comments: {{post.comments.count}}</a>
         </div>
     {% endfor %}
+
+    {% include 'blog/post_pagination.html' with page=posts %}
 {% endblock %}

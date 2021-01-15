@@ -10,6 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import pymysql
+
+pymysql.version_info = (2, 0, 3, "final", 0)
+pymysql.install_as_MySQLdb()
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -72,9 +77,17 @@ WSGI_APPLICATION = 'mydjango_prj.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'python_db',  # DB명
+        'USER': 'python',  # 데이터베이스 계정
+        'PASSWORD': 'python',  # 계정 비밀번호
+        'HOST': 'localhost',  # 데이테베이스 IP
+        'PORT': '3306',  # 데이터베이스 port
     }
 }
 
